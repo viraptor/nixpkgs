@@ -1,7 +1,10 @@
-{ stdenv, lib, fetchgit, fetchFromGitHub
+{ lib, fetchgit, fetchFromGitHub
 , gn, ninja, python3, glib, pkg-config, icu
 , xcbuild, darwin
 , fetchpatch
+, llvmPackages
+, symlinkJoin
+, llvm-binutils
 }:
 
 # Use update.sh to update all checksums.
@@ -67,6 +70,9 @@ let
     src = gnSrc;
   });
 
+  llvmCcAndBintools = symlinkJoin { name= "llvmCcAndBintools"; paths = [ stdenv.cc llvm-binutils ]; };
+
+  stdenv = llvmPackages.libcxxStdenv;
 in
 
 stdenv.mkDerivation rec {
@@ -120,10 +126,11 @@ stdenv.mkDerivation rec {
     "treat_warnings_as_errors=false"
     "v8_enable_i18n_support=true"
     "use_gold=false"
+    "v8_enable_system_instrumentation=false"
     # ''custom_toolchain="//build/toolchain/linux/unbundle:default"''
     ''host_toolchain="//build/toolchain/linux/unbundle:default"''
     ''v8_snapshot_toolchain="//build/toolchain/linux/unbundle:default"''
-  ] ++ lib.optional stdenv.cc.isClang ''clang_base_path="${stdenv.cc}"'';
+  ] ++ lib.optional stdenv.cc.isClang ''clang_base_path="${llvmCcAndBintools}"'';
 
   NIX_CFLAGS_COMPILE = "-O2";
   FORCE_MAC_SDK_MIN = stdenv.targetPlatform.sdkVer or "10.12";
@@ -138,9 +145,13 @@ stdenv.mkDerivation rec {
     darwin.DarwinTools
     python3.pkgs.setuptools
   ];
-  buildInputs = [ glib icu ] ++ lib.optionals stdenv.isDarwin [
-    darwin.Libsystem
-  ];
+  buildInputs = [ glib icu ]; # ++ lib.optionals stdenv.isDarwin [
+    #darwin.Libsystem
+  #];
+
+  preBuild =''
+    export AR=${llvmPackages.bintools}/bin/llvm-ar
+  '';
 
   ninjaFlags = [ ":d8" "v8_monolith" ];
 
