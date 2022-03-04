@@ -5437,6 +5437,8 @@ with pkgs;
 
   frr = callPackage ../servers/frr { };
 
+  gemstash = callPackage ../development/tools/gemstash/Gemfile { };
+
   hmetis = pkgsi686Linux.callPackage ../applications/science/math/hmetis { };
 
   libbsd = callPackage ../development/libraries/libbsd { };
