@@ -19,6 +19,9 @@
 , testers
 , nushell
 , nix-update-script
+, makeBinaryWrapper
+, nushellPlugins
+, runCommand
 }:
 
 let
@@ -65,6 +68,23 @@ rustPlatform.buildRustPackage {
       package = nushell;
     };
     updateScript = nix-update-script { };
+    withPlugins =
+      let
+        plugins = with nushellPlugins; [ formats gstat query ];
+        pluginRegistryPath = "$out/share/nushell/plugins.nu";
+        pluginRegistrations = (map (p: ''${nushell}/bin/nu --plugin-config ${pluginRegistryPath} -c "register ${p}/bin/${p.meta.mainProgram}"'') plugins);
+      in
+      runCommand "nushell-with-plugins"
+        {
+          nativeBuildInputs = [ makeBinaryWrapper ];
+        } ''
+        mkdir -p "$(dirname ${pluginRegistryPath})"
+        touch ${pluginRegistryPath}
+        ${builtins.concatStringsSep "\n" pluginRegistrations}
+        makeBinaryWrapper ${nushell}/bin/nu $out/bin/nu \
+          --add-flags --plugin-config \
+          --add-flags "${pluginRegistryPath}"
+      '';
   };
 
   meta = with lib; {
