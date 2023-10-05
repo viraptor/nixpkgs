@@ -3,9 +3,9 @@
 let
   # aarch64-darwin needs a clang that can build arm64e binaries, so make sure a version of LLVM
   # is used that can do that, but prefer the stdenv one if it is new enough.
-  llvmPkgs = if (lib.versionAtLeast (lib.getVersion llvmPackages.clang) "13")
-    then llvmPackages
-    else llvmPackages_13;
+  llvmPkgs = llvmPackages_13; #if (lib.versionAtLeast (lib.getVersion llvmPackages.clang) "13")
+    #then llvmPackages
+    #else llvmPackages_13;
   in
 if stdenv.hostPlatform.isStatic
 then throw ''
