@@ -9,8 +9,14 @@ stdenv.mkDerivation rec {
     sha256 = "0gnnm8iqcl52m8iha3sxrzrl9mcyhg7lfrhhqgdn4zj00ji14wbn";
   };
 
+  makeFlags = [ "CFLAGS=-std=c89" ];
+
   nativeBuildInputs = [ autoreconfHook ];
-  patches = [ ./gperf-ar-fix.patch ];
+  patches = [
+    ./gperf-ar-fix.patch
+    # Clang 16 defaults to C++17, which does not allow `register` as a storage class specifier.
+    ./gperf-c++17-register-fix.patch
+  ];
   meta = {
     description = "Perfect hash function generator";
 
