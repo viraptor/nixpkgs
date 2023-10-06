@@ -57,6 +57,7 @@
       "-DWITH_OPENSSL=ON"
       # on darwin this defaults to ON but we want to build against unixODBC
       "-DWITH_IODBC=OFF"
+      "-DCMAKE_C_FLAGS=\"-std=gnu89\""
     ];
 
     passthru = {
