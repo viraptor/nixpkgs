@@ -1,7 +1,9 @@
-{ lib
-, stdenv
-, fetchFromGitHub
-, libiconv
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  fetchpatch,
+  libiconv,
 }:
 
 stdenv.mkDerivation rec {
@@ -15,10 +17,19 @@ stdenv.mkDerivation rec {
     hash = "sha256-eOp/SOynh0HUz62Ki5ADRk7FjQY0Gh55ydVnO0MCXAA=";
   };
 
+  patches = [
+    (fetchpatch {
+      # remove unused variable (program compiles with -Werror,-Wunused-but-set-variable) https://github.com/JayXon/Leanify/pull/95
+      url = "https://github.com/JayXon/Leanify/commit/25b29bac68200832d55e1e2793a10b3e8068998f.patch";
+      hash = "sha256-ybxaRFfNGImLa9EoU6DMA3MOCOxKtfui/1F/zQHp17o=";
+      name = "unused-variable.patch";
+    })
+  ];
+
   postPatch = lib.optionalString stdenv.isDarwin ''
     substituteInPlace Makefile \
-      --replace "-flto" "" \
-      --replace "lib/LZMA/Alloc.o" "lib/LZMA/CpuArch.o lib/LZMA/Alloc.o"
+      --replace-fail "-flto" "" \
+      --replace-fail "lib/LZMA/Alloc.o" "lib/LZMA/CpuArch.o lib/LZMA/Alloc.o"
   '';
 
   buildInputs = lib.optionals stdenv.isDarwin [ libiconv ];
