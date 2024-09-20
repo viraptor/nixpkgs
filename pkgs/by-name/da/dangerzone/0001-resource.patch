@@ -1,0 +1,15 @@
+diff --git a/dangerzone/util.py b/dangerzone/util.py
+index 311288c..d19df14 100644
+--- a/dangerzone/util.py
++++ b/dangerzone/util.py
+@@ -24,6 +24,7 @@ def get_tmp_dir() -> Optional[str]:
+ 
+ 
+ def get_resource_path(filename: str) -> str:
++    return str(pathlib.Path('@out@') / 'share' / filename)
+     if getattr(sys, "dangerzone_dev", False):
+         # Look for resources directory relative to python file
+         project_root = pathlib.Path(__file__).parent.parent
+-- 
+2.44.1
+
