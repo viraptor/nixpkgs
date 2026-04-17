@@ -29,6 +29,8 @@ buildPythonPackage rec {
     "test_method_decorator_works_on_unittest_kwarg_frozen_time"
     "test_method_decorator_works_on_unittest_kwarg_frozen_time_with_func"
     "test_method_decorator_works_on_unittest_kwarg_hello"
+    "test_fake_datetime_select"
+    "test_fake_date_select"
   ];
 
   pythonImportsCheck = [ "freezegun" ];
