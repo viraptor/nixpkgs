@@ -24,6 +24,7 @@
   swift-tools-support-core,
   swift_release,
   xcbuild,
+  re-derq,
 }:
 
 let
@@ -38,6 +39,14 @@ let
   };
 
   swiftPlatform = stdenv.hostPlatform.swift.platform;
+  new-sigtool = darwin.sigtool.overrideAttrs {
+    src = fetchFromGitHub {
+      owner = "viraptor";
+      repo = "sigtool";
+      rev = "9f39b0b45af04f24f723c3a9049ae8839952c094";
+      hash = "sha256-6fxmbema/6mb6/p5GKWS2/oMVDfoj2T5XQUYd/Mtq0Y=";
+    };
+  };
 in
 
 # Swift Build is a dependency of SwiftPM. It must be built with CMake to avoid dependency cycles.
@@ -70,7 +79,7 @@ stdenv.mkDerivation (finalAttrs: {
       libtool = lib.getBin llvm_libtool;
       llvm = lib.getBin llvmPackages_current.llvm;
       shell_cmds = if stdenv.hostPlatform.isDarwin then lib.getBin darwin.shell_cmds else "/not-supported";
-      sigtool = lib.getBin darwin.sigtool;
+      sigtool = lib.getBin new-sigtool;
     })
     # Swift Build checks whether the SDK is Xcode by looking at the `DEVELOPER_DIR` path for Xcode.
     # Have it treat store paths as being Xcode SDKs so that the nixpkgs SDK is treated as a Darwin platform.
@@ -92,6 +101,14 @@ stdenv.mkDerivation (finalAttrs: {
     # Use the path to `swift` to find the plugin server binary
     substituteInPlace Sources/SWBCore/Settings/Settings.swift \
       --replace-fail '\(toolchain.path.str)/usr/bin/swift-plugin-server' ${lib.getExe' swift.swiftc "swift-plugin-server"}
+    substituteInPlace Sources/SWBTaskConstruction/TaskProducers/OtherTaskProducers/GeneratedFilesTaskProducer.swift \
+      --replace-fail '/usr/bin/derq' ${lib.getExe re-derq}
+    substituteInPlace Sources/SwiftBuildTestSupport/CoreQualificationTester.swift \
+      --replace-fail '/usr/bin/derq' ${lib.getExe re-derq}
+    substituteInPlace Tests/SWBTaskConstructionTests/PlatformTaskConstructionTests.swift \
+      --replace-fail '/usr/bin/derq' ${lib.getExe re-derq}
+    substituteInPlace Tests/SWBTaskConstructionTests/UnitTestTaskConstructionTests.swift \
+      --replace-fail '/usr/bin/derq' ${lib.getExe re-derq}
   '';
 
   strictDeps = true;
