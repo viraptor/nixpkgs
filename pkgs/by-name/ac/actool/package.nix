@@ -12,8 +12,9 @@ python3Packages.buildPythonApplication (finalAttrs: {
   src = fetchFromGitHub {
     owner = "viraptor";
     repo = "actool";
-    tag = finalAttrs.version;
-    hash = "sha256-OJJwEZEz+nNq3W1SDXt76Vx9qvEFUUL4dyem/oc2RA4=";
+    #tag = finalAttrs.version;
+    rev = "67bfde618594f94cf6560365ef11950a392abb2d";
+    hash = "sha256-FMU9FdanS1KlCLfAc0StL3ZblvxzPCcJa41+JpAUJiU=";
   };
 
   build-system = with python3Packages; [
