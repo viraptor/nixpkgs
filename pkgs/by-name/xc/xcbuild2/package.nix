@@ -70,8 +70,8 @@ stdenv'.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "viraptor";
     repo = "xcbuild";
-    rev = "8e36c1fb63fc72c2868804f0869bbe748e2e73e9";
-    hash = "sha256-8mscmMR6bVQiL7qcMtxVnUCX6xxcDVFIsG0K3H7U0OQ=";
+    rev = "3fa976463d28cc2c6104c995f7d2143b07cb6f2b";
+    hash = "sha256-YjsvB/31uwPK/Vg4qFk/4CszdRDtsdnGh6XgPXxkoeE=";
   };
 
   patches = [

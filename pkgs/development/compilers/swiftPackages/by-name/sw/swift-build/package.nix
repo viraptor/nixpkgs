@@ -107,8 +107,8 @@ stdenv.mkDerivation (finalAttrs: {
       --replace-fail '/usr/bin/derq' ${lib.getExe re-derq}
     substituteInPlace Tests/SWBTaskConstructionTests/PlatformTaskConstructionTests.swift \
       --replace-fail '/usr/bin/derq' ${lib.getExe re-derq}
-    substituteInPlace Tests/SWBTaskConstructionTests/UnitTestTaskConstructionTests.swift \
-      --replace-fail '/usr/bin/derq' ${lib.getExe re-derq}
+    substituteInPlace Sources/SWBCore/SpecImplementations/Tools/MkdirTool.swift \
+      --replace-fail '/bin/mkdir' 'mkdir'
   '';
 
   strictDeps = true;

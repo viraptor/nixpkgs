@@ -9,7 +9,7 @@
   swiftPackages,
   clang,
   llvmPackages,
-  apple-sdk,
+  apple-sdk_26,
   xcodebuild,
   xcbuild2,
   symlinkJoin,
@@ -23,7 +23,11 @@
   zlib,
   python3,
   re-intentbuilderc,
+  re-appintentsmetadataprocessor,
+  re-plistbuddy,
   actool,
+  rsync,
+  libxml2,
 }:
 
 let clang-lib = lib.getLib llvmPackages.clang-unwrapped;
@@ -31,7 +35,7 @@ new-sdk = symlinkJoin {
   name = "new_sdk";
   paths = [
     actool
-    apple-sdk
+    apple-sdk_26
     xcbuild2
   ];
 };
@@ -39,8 +43,8 @@ new-sigtool = darwin.sigtool.overrideAttrs {
   src = fetchFromGitHub {
     owner = "viraptor";
     repo = "sigtool";
-    rev = "c097ad9f529ac76b0aa32cb1e914c756c7de5d92";
-    hash = "sha256-wcIjawBPw439ZrZHRZLanrcch1zSYAt4X8r4Oi+VcoE=";
+    rev = "f692c08eaed1a52b2ee42ff83d3c95fdd1d3aa21";
+    hash = "sha256-0M8kxXTWzlMQHx5LNju3/sYn1Cl1R/vP6s7prK8iLz8=";
   };
 };
 in
@@ -55,9 +59,22 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-HEEkn1f0BNZZz8m2ZKfmfuklBoH8c2Mi+zhbC5rbCFw=";
   };
 
-  nativeBuildInputs = [ swiftPackages.swift-build swiftPackages.swiftc new-sdk ibtool re-derq libtapi.bin new-sigtool libressl re-intentbuilderc ];# llvmPackages.clang-unwrapped ];
+  nativeBuildInputs = [
+    swiftPackages.swift-build
+    swiftPackages.swift
+    new-sdk
+    ibtool
+    re-derq
+    libtapi.bin
+    new-sigtool
+    libressl
+    re-intentbuilderc
+    re-appintentsmetadataprocessor
+    re-plistbuddy
+    rsync
+  ];# llvmPackages.clang-unwrapped ];
 
-  buildInputs = [ sqlite libedit.dev zlib ];
+  buildInputs = [ sqlite libedit.dev zlib libxml2 darwin.ICU ];
 
   # 1. We can't use something like
   #   "CLANG_EXPLICIT_MODULES_LIBCLANG_PATH": "${llvmPackages.libclang.lib}/lib/libclang.dylib"
@@ -70,10 +87,12 @@ stdenv.mkDerivation (finalAttrs: {
   "overrides": {
     "environmentConfig": {
       "table": {
+        "CODESIGN": "${new-sigtool}/bin/codesign",
         "CODE_SIGN_IDENTITY": "-",
         "LD": "clang",
         "CLANG_ENABLE_EXPLICIT_MODULES": "NO",
-        "GCC_TREAT_WARNINGS_AS_ERRORS": "NO"
+        "GCC_TREAT_WARNINGS_AS_ERRORS": "NO",
+        "SWIFT_STDLIB_TOOL_STRIP_BITCODE": "NO"
       }
     }
   }
@@ -89,6 +108,25 @@ EOF
       --replace-fail "/bin/mkdir" "mkdir"
     substituteInPlace scripts/docs/bin/build_docs.py \
       --replace-fail '/usr/bin/env -S -P/usr/bin:''${PATH} python3' "${lib.getExe python3}"
+    substituteInPlace Pods/Pods.xcodeproj/project.pbxproj \
+      --replace-fail 'ditto' "cp -L"
+
+    substituteInPlace "Pods/Target Support Files/CocoaHTTPServer/CocoaHTTPServer.release.xcconfig" \
+      --replace-fail '$(SDKROOT)/usr/include/libxml2' "${lib.getDev libxml2}/include/libxml2"
+    substituteInPlace "Pods/Target Support Files/Pods-Hammerspoon/Pods-Hammerspoon.release.xcconfig" \
+      --replace-fail 'LIBRARY_SEARCH_PATHS = $(inherited)' 'LIBRARY_SEARCH_PATHS = $(inherited) ${lib.getLib darwin.ICU}/lib'
+    substituteInPlace "Pods/Target Support Files/Pods-Hammerspoon/Pods-Hammerspoon-frameworks.sh" \
+      --replace-fail '/usr/bin/codesign' '${new-sigtool}/bin/codesign'
+    substituteInPlace "Pods/Target Support Files/Pods-Hammerspoon/Pods-Hammerspoon-frameworks.sh" \
+      --replace-fail "rev | cut -d ':' -f1 | awk '{\$1=\$1;print}' | rev" "awk -F': *' '{print \$NF}'"
+    substituteInPlace "scripts/update_version_build_numbers.sh" \
+      --replace-fail 'git=' 'git="" #'
+    substituteInPlace "scripts/update_version_build_numbers.sh" \
+      --replace-fail 'versionNumber=' 'versionNumber="${finalAttrs.version}" #'
+    substituteInPlace "scripts/update_version_build_numbers.sh" \
+      --replace-fail 'buildNumber=' 'buildNumber="0" #'
+    substituteInPlace "scripts/update_version_build_numbers.sh" \
+      --replace-fail '/usr/libexec/PlistBuddy' '${lib.getExe' re-plistbuddy "PlistBuddy"}'
   '';
 
   buildPhase = ''
@@ -97,10 +135,10 @@ EOF
     ls -la
     export DEVELOPER_DIR=${new-sdk}
     # module dependency discovery doesn't work, so we have to list them
-    for component in lua LuaSkin Sentry Hammerspoon ; do
+    for component in Pods-Hammerspoon CocoaHTTPServer ASCIImage CocoaAsyncSocket PocketSocket MIKMIDI Sparkle SocketRocket ORSSerialPort lua LuaSkin Sentry Hammerspoon ; do
       if ! swbuild build Hammerspoon.xcworkspace --target $component --configuration Release --derivedDataPath $PWD/build --buildParametersFile $PWD/settings.json ; then
         echo "=== dev out ==="
-        find build
+        #find build/Products/Release/Hammerspoon.app
         exit 1
       fi
     done
@@ -111,7 +149,7 @@ EOF
     runHook preInstall
 
     mkdir -p $out/Applications
-    cp -r Hammerspoon.app $out/Applications
+    cp -r build/Products/Release/Hammerspoon.app $out/Applications
 
     runHook postInstall
   '';

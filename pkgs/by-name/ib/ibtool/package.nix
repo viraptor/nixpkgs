@@ -12,9 +12,9 @@ python3Packages.buildPythonApplication (finalAttrs: {
   src = fetchFromGitHub {
     owner = "viraptor";
     repo = "ibtool";
-    rev = "fb10d98ac65ac22da09043c7d47032fcd7a1155d";
+    rev = "e41fb12fa962a6e332d794700ffd8c02da03bd37";
     #tag = finalAttrs.version;
-    hash = "sha256-qkqexOLk/DG63PryPE/O/T1lkTsNBAVckzyy8vSc0VI=";
+    hash = "sha256-5Ayh2Yqppwl5i6YXRUYgSrvkTom0C+zXhb+lQNQWfAI=";
   };
 
   build-system = with python3Packages; [
