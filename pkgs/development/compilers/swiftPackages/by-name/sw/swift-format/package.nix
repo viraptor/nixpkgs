@@ -3,7 +3,7 @@
   fetchFromGitHub,
   fetchSwiftPMDeps,
   swift,
-  swiftpmHook,
+  swiftpm,
   stdenv,
   swift_release,
 }:
@@ -39,6 +39,6 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     swift
-    swiftpmHook
+    swiftpm
   ];
 })

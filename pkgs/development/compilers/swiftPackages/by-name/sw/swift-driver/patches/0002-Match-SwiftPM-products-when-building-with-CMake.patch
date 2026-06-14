@@ -1,38 +1,15 @@
-From 5e61679e7fdbe8b243637bd00099221d9d078989 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Randy Eckenrode <randy@largeandhighquality.com>
-Date: Tue, 9 Dec 2025 18:15:16 -0500
-Subject: [PATCH] match-swiftpm-products
+Date: Fri, 26 Jun 2026 21:01:31 -0400
+Subject: [PATCH 2/3] Match SwiftPM products when building with CMake
 
+Adjust the built libraries to match the way SwiftPM would build the
+Swift Compiler Driver.
 ---
- Package.resolved                            | 6 +++---
  Sources/SwiftDriverExecution/CMakeLists.txt | 7 +------
  Sources/SwiftOptions/CMakeLists.txt         | 7 +------
- 3 files changed, 5 insertions(+), 15 deletions(-)
+ 2 files changed, 2 insertions(+), 12 deletions(-)
 
-diff --git a/Package.resolved b/Package.resolved
-index ea13f2a0..9433b807 100644
---- a/Package.resolved
-+++ b/Package.resolved
-@@ -14,8 +14,8 @@
-       "kind" : "remoteSourceControl",
-       "location" : "https://github.com/swiftlang/swift-llbuild.git",
-       "state" : {
--        "branch" : "release/6.2.1",
--        "revision" : "d80e185b78cef06757a180a2729b84260c1422a5"
-+        "branch" : "release/6.2",
-+        "revision" : "073dff55529d7c4ecbd615ab5f5ac52ae5b380da"
-       }
-     },
-     {
-@@ -32,7 +32,7 @@
-       "kind" : "remoteSourceControl",
-       "location" : "https://github.com/swiftlang/swift-tools-support-core.git",
-       "state" : {
--        "branch" : "release/6.2.1",
-+        "branch" : "release/6.2",
-         "revision" : "5a993c8848487c934d53ffceef8e1cad0a241dc1"
-       }
-     }
 diff --git a/Sources/SwiftDriverExecution/CMakeLists.txt b/Sources/SwiftDriverExecution/CMakeLists.txt
 index 91c9bc12..17adca61 100644
 --- a/Sources/SwiftDriverExecution/CMakeLists.txt
@@ -78,5 +55,5 @@ index d4dbbcc3..4dea39d6 100644
 -  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 -  RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 -- 
-2.51.2
+2.54.0
 

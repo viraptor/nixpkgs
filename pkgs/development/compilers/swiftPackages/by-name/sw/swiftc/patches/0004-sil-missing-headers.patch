@@ -1,7 +1,7 @@
-From 4b47fbf51e3d49ab520bba333c52faf9583feeb7 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Randy Eckenrode <randy@largeandhighquality.com>
 Date: Sun, 4 Jan 2026 14:46:08 -0500
-Subject: [PATCH] sil-missing-headers
+Subject: [PATCH 4/9] sil-missing-headers
 
 Fix compilation errors when building the SIL module during bootstrap.
 
@@ -25,5 +25,5 @@ index 115d6849866..deeb500e3b3 100644
  
  SWIFT_BEGIN_NULLABILITY_ANNOTATIONS
 -- 
-2.51.2
+2.54.0
 

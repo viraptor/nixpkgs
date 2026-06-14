@@ -3,22 +3,18 @@
   fetchFromGitHub,
   stdenv,
   cmake,
+  llvm_libtool,
   ninja,
-  swift-no-testing,
+  swift-minimal,
   swift_release,
 }:
 
-# The build for Swift Syntax extracts the shared libraries from the compiler, which will be re-linked against this
-# derivation. This allows macro-based packages to use the libraries from the compiler.
-#stdenvNoCC.mkDerivation
+# Note: This is just a build of Swift Syntax that reuses the libraries from the compiler.
+# This is needed for library plugins that are part of the toolchain. Otherwise, they won’t find their macro types.
+
 stdenv.mkDerivation (finalAttrs: {
   pname = "swift-syntax";
   version = swift_release;
-
-  outputs = [
-    "out"
-    "dev"
-  ];
 
   src = fetchFromGitHub {
     owner = "swiftlang";
@@ -31,38 +27,13 @@ stdenv.mkDerivation (finalAttrs: {
 
   strictDeps = true;
 
-  preConfigure = ''
-    appendToVar cmakeFlags -DCMAKE_Swift_COMPILER_TARGET=${stdenv.hostPlatform.swift.triple}
-    appendToVar cmakeFlags -DCMAKE_Swift_FLAGS=-module-cache-path\ "$NIX_BUILD_TOP/module-cache"
-  '';
-
-  cmakeFlags = [
-    # Defaults to static, but we want shared libraries by default.
-    (lib.cmakeBool "BUILD_SHARED_LIBS" (!stdenv.hostPlatform.isStatic))
-    # Build and install the modules.
-    (lib.cmakeBool "SWIFTSYNTAX_EMIT_MODULE" true)
-  ];
-
-  nativeBuildInputs = [
-    cmake
-    ninja
-    swift-no-testing
-  ];
-
-  postBuild = ''
-    # This library is inexplicably not built, but it’s part of the install target.
-    ninja libSwiftCompilerPlugin${stdenv.hostPlatform.extensions.library}
-  '';
-
-  postInstall = ''
-    moveToOutput lib/swift/host "$dev"
-
+  buildCommand = ''
     # Install CMake config file for the Swift Collections library.
     mkdir -p mkdir -p "''${!outputDev}/lib/cmake/SwiftSyntax"
     substitute ${./files/SwiftSyntaxConfig.cmake} "''${!outputDev}/lib/cmake/SwiftSyntax/SwiftSyntaxConfig.cmake" \
       --replace-fail '@buildType@' ${if stdenv.hostPlatform.isStatic then "STATIC" else "SHARED"} \
-      --replace-fail '@include@' "''${!outputDev}" \
-      --replace-fail '@lib@' "''${!outputLib}"
+      --replace-fail '@dev@' ${lib.escapeShellArg swift-minimal.swiftc.out} \
+      --replace-fail '@lib@' ${lib.escapeShellArg swift-minimal.swiftc.out}
   '';
 
   __structuredAttrs = true;

@@ -1,7 +1,7 @@
-From bd6ffcdfa69955cdbca17ea62e2584841458228e Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Randy Eckenrode <randy@largeandhighquality.com>
 Date: Sat, 13 Dec 2025 22:58:44 -0500
-Subject: [PATCH] nix-build-caches
+Subject: [PATCH 6/9] nix-build-caches
 
 ---
  .../FileSystem/FileSystem+Extensions.swift    |   6 +
@@ -737,5 +737,5 @@ index 000000000..5f9674b2e
 +    }
 +}
 -- 
-2.50.1
+2.54.0
 

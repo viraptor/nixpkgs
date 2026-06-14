@@ -1,7 +1,7 @@
-From 9d0a0f13012d87bc3a91e021132027582532a92c Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Randy Eckenrode <randy@largeandhighquality.com>
 Date: Sat, 13 Dec 2025 22:59:36 -0500
-Subject: [PATCH] set-compiler-vendor
+Subject: [PATCH 8/9] set-compiler-vendor
 
 ---
  Sources/PackageModel/UserToolchain.swift      | 6 ------
@@ -46,5 +46,5 @@ index 7f21304c6..39d7333c5 100644
          return .init(swiftCompilerPath: swiftCompilerPath)
      }
 -- 
-2.50.1
+2.54.0
 

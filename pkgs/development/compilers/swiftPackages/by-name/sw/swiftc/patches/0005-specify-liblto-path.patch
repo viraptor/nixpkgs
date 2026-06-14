@@ -1,7 +1,7 @@
-From 3e8019c6c279ee0ec1567d0c55b722828f898cb7 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Randy Eckenrode <randy@largeandhighquality.com>
 Date: Sun, 4 Jan 2026 14:47:06 -0500
-Subject: [PATCH] specify-liblto-path
+Subject: [PATCH 5/9] specify-liblto-path
 
 ---
  cmake/modules/UnixCompileRules.cmake | 2 +-
@@ -22,10 +22,10 @@ index 06a597b5ebb..e9086801408 100644
    set(CMAKE_C_ARCHIVE_CREATE "${CMAKE_COMMAND} -E env LIBLTO_PATH=${liblto_path} <CMAKE_AR> crs <TARGET> <LINK_FLAGS> <OBJECTS>")
    set(CMAKE_C_ARCHIVE_APPEND "${CMAKE_COMMAND} -E env LIBLTO_PATH=${liblto_path} <CMAKE_AR> qs <TARGET> <LINK_FLAGS> <OBJECTS>")
 diff --git a/lib/Driver/DarwinToolChains.cpp b/lib/Driver/DarwinToolChains.cpp
-index 013c0a53ad2..9fb12e65454 100644
+index 7d4d7d61071..832c2dffde3 100644
 --- a/lib/Driver/DarwinToolChains.cpp
 +++ b/lib/Driver/DarwinToolChains.cpp
-@@ -276,11 +276,8 @@ void toolchains::Darwin::addLTOLibArgs(ArgStringList &Arguments,
+@@ -270,11 +270,8 @@ void toolchains::Darwin::addLTOLibArgs(ArgStringList &Arguments,
      Arguments.push_back("-lto_library");
      Arguments.push_back(context.Args.MakeArgString(context.OI.LibLTOPath));
    } else {
@@ -40,5 +40,5 @@ index 013c0a53ad2..9fb12e65454 100644
      llvm::sys::path::append(LibLTOPath, "libLTO.dylib");
      if (llvm::sys::fs::exists(LibLTOPath)) {
 -- 
-2.51.2
+2.54.0
 

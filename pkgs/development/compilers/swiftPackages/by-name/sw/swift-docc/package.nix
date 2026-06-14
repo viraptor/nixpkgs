@@ -4,7 +4,7 @@
   fetchSwiftPMDeps,
   stdenv,
   swift,
-  swiftpmHook,
+  swiftpm,
   swift_release,
 }:
 
@@ -29,9 +29,14 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-q3PZjzn2Zweyv5q2c4WgSe11FTp6EO3qxR/Qu3fOm6I=";
   };
 
+  swiftpmFlags = [
+    # Otherwise fails to build with `error: module 'SwiftDocC' was not compiled for testing`.
+    "-Xswiftc" "-enable-testing"
+  ];
+
   nativeBuildInputs = [
     swift
-    swiftpmHook
+    swiftpm
   ];
 
   meta = {

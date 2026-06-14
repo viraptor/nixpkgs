@@ -1,7 +1,7 @@
-From eee18cc29cea4d650d1298e347f90c787260fa0a Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Randy Eckenrode <randy@largeandhighquality.com>
 Date: Fri, 13 Feb 2026 20:51:47 -0500
-Subject: [PATCH] use-nixpkgs-libdispatch
+Subject: [PATCH 6/9] use-nixpkgs-libdispatch
 
 ---
  CMakeLists.txt                           | 10 ++--------
@@ -66,5 +66,5 @@ index d3a5011058c..fb037e40bbb 100644
      # target at this point in the process.  Currently, we're relying
      # on soft-linking.
 -- 
-2.51.2
+2.54.0
 

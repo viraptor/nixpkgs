@@ -2,18 +2,17 @@
   lib,
   stdenv,
   swift,
-  swiftpmHook,
-  swiftPackages,
+  swiftpm,
 }:
 
-swiftPackages.stdenv.mkDerivation (finalAttrs: {
-  name = "swift-cxx-interop-test";
+stdenv.mkDerivation (finalAttrs: {
+  name = "test-cxx-interop";
 
   src = ./src;
 
   nativeBuildInputs = [
     swift
-    swiftpmHook
+    swiftpm
   ];
 
   postBuild = ''

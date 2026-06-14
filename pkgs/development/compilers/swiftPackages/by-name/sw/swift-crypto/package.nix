@@ -14,7 +14,7 @@ in
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "swift-crypto";
-  version = "4.2.0";
+  version = "4.5.0";
 
   outputs = [
     "out"
@@ -25,7 +25,7 @@ stdenv.mkDerivation (finalAttrs: {
     owner = "apple";
     repo = "swift-crypto";
     tag = finalAttrs.version;
-    hash = "sha256-fdWNuaECRf317rhqTyB7xUTxncYQAd9NwfH3ZGtOflA=";
+    hash = "sha256-vVeVImEmj76ML2bzYTpEhrUuqlxwA4GyIN9KQSA6Zy0=";
   };
 
   patches = [

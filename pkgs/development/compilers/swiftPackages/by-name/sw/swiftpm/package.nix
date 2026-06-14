@@ -2,11 +2,13 @@
   lib,
   cmake,
   fetchFromGitHub,
+  fixDarwinDylibNames,
   ninja,
   replaceVars,
   sqlite,
   stdenv,
   swift,
+  swiftpmHook,
   swift-argument-parser,
   swift-asn1,
   swift-build,
@@ -18,7 +20,7 @@
   swift-syntax,
   swift-system,
   swift-tools-support-core,
-  swift_release,swiftpmHook
+  swift_release,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -103,6 +105,21 @@ stdenv.mkDerivation (finalAttrs: {
     swift-system
     swift-tools-support-core
   ];
+
+  postInstall = lib.optionalString stdenv.hostPlatform.isDarwin ''
+    # Replace `@rpath` with absolute paths on Darwin. For some reason, this isn’t always done during installation.
+    # `fixDarwinDylibNames` doesn’t work either.
+    IFS= readarray -d "" dylibs < <(find "$out" -type f -and -name '*.dylib' -print0)
+    declare -a mappings
+
+    for dylib in "''${dylibs[@]}"; do
+      mappings+=(-change "@rpath/$(basename "$dylib")" "$dylib")
+    done
+
+    for dylib in "''${dylibs[@]}"; do
+      install_name_tool "$dylib" ''${mappings[@]}
+    done
+  '';
 
   __structuredAttrs = true;
 
